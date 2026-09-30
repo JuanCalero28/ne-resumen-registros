@@ -47,6 +47,18 @@ h2{font-size:clamp(22px,3.2vw,36px);max-width:920px}
 .two{display:grid;grid-template-columns:260px 1fr;gap:28px;align-items:center}
 .donut{width:230px;height:230px;border-radius:50%;position:relative;margin:auto}
 .donut::after{content:attr(data-c);position:absolute;inset:26%;background:var(--bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Source Serif 4',Georgia,serif;font-size:34px;font-weight:700}
+.b.g{background:var(--green)}
+.hist{width:100%;height:auto;max-height:52vh;display:block}
+.hist text{fill:var(--soft);font-size:12px;font-family:'IBM Plex Sans',sans-serif}
+.hist .ax{font-size:12.5px}.hist .bl{fill:#fff;font-weight:600;font-size:12.5px}
+.hist .dl{fill:var(--ink);font-weight:600;font-size:12.5px;stroke:var(--bg);stroke-width:3.5px;paint-order:stroke}
+.hist .gl{stroke:var(--line);stroke-width:1}.hist .bar{fill:var(--navy);opacity:.92}
+.hist .pl{fill:none;stroke:var(--gold);stroke-width:3;stroke-linejoin:round}.hist .pt{fill:var(--gold);stroke:var(--bg);stroke-width:2}
+.dg{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 14px;align-items:start}
+.dn{text-align:center}
+.ring{width:min(122px,24vw);aspect-ratio:1;border-radius:50%;margin:0 auto 8px;position:relative}
+.ring::after{content:attr(data-c);position:absolute;inset:24%;background:var(--bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:18px}
+.dn b{display:block;font-size:14px}.dn .f{color:var(--rust);font-weight:600;font-size:14px}.dn small{display:block;color:var(--soft);font-size:12px}
 .list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 .item{background:var(--card);border:1px solid var(--line);padding:16px 18px}
 .item h3{margin:0 0 5px;font-size:16px}.item p{margin:0;font-size:14px;color:var(--soft)}
@@ -95,6 +107,28 @@ h2{font-size:clamp(22px,3.2vw,36px);max-width:920px}
       <p class="note" style="margin-top:14px">Las matrículas avanzan más rápido que los cursos porque se archivaron primero los cursos más numerosos.</p>
     </div>
   </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Cursos por periodo</div>
+  <h2>Cursos archivados y cuántos faltan, periodo por periodo</h2>
+  <p class="sub">Verde: archivado. Naranja: pendiente. El número en naranja es lo que falta.</p>
+  <div class="dg" id="dc"></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Alumnos registrados por periodo</div>
+  <h2>Matrículas cubiertas y cuántas faltan, periodo por periodo</h2>
+  <p class="sub">Cada matrícula es un alumno registrado en un curso; un mismo alumno puede sumar varias.</p>
+  <div class="dg" id="dm"></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Histograma por periodo</div>
+  <h2>Alumnos con nota (en cursos archivados) y cursos archivados</h2>
+  <p class="sub">Las barras son los alumnos registrados en cursos ya archivados; la línea son los cursos archivados. Las escalas están alineadas (16 alumnos por cada curso) para que ambas series se lean juntas.</p>
+  <div id="c3"></div>
+  <div class="legend"><span><i style="background:var(--navy)"></i>Alumnos registrados en cursos archivados (eje izquierdo)</span><span><i style="background:var(--gold)"></i>Cursos archivados (eje derecho)</span></div>
 </section>
 
 <section class="slide">
@@ -154,6 +188,28 @@ const inc=newA.map((v,i)=>v-oldA[i]), mx=Math.max(...inc);
 document.getElementById('r1').innerHTML=P.map((p,i)=>`<div class="row"><b>${p}</b><div class="track"><div class="fill" style="width:${inc[i]/mx*100}%;background:var(--navy)"></div></div><div class="val"><b>+${inc[i]}</b><small>${oldA[i]} → ${newA[i]} cursos</small></div></div>`).join('');
 const pend=tot.map((t,i)=>t-newA[i]), pm=Math.max(...pend);
 document.getElementById('r2').innerHTML=P.map((p,i)=>`<div class="row"><b>${p}</b><div class="track"><div class="fill" style="width:${pend[i]/pm*100}%;background:${col(newC[i])}"></div></div><div class="val"><b>${pend[i]}</b><small>${newC[i]}% avance</small></div></div>`).join('');
+const totM=[2058,2117,2011,1930,1772,1781,1389], arcM=[216,1404,1475,1008,1217,1437,1237];
+const fmt=n=>n.toLocaleString('es-PE');
+function donuts(id,tot,arc,unit){
+ document.getElementById(id).innerHTML=P.map((p,k)=>{const pc=arc[k]/tot[k]*100;
+ return `<div class="dn"><div class="ring" data-c="${pc.toFixed(0)}%" style="background:conic-gradient(var(--green) 0 ${pc}%,var(--rust) ${pc}% 100%)"></div><b>${p}</b><span class="f">Faltan ${fmt(tot[k]-arc[k])}</span><small>${fmt(arc[k])} de ${fmt(tot[k])} ${unit}</small></div>`}).join('')
+ +`<div class="dn" style="align-self:center"><div class="legend" style="flex-direction:column;align-items:flex-start;gap:8px;justify-content:center"><span><i style="background:var(--green)"></i>Archivado</span><span><i style="background:var(--rust)"></i>Pendiente</span></div></div>`;
+}
+donuts('dc',tot,newA,'cursos');donuts('dm',totM,arcM,'matrículas');
+(function(){
+ const W=760,H=340,L=74,R=686,T=24,B=290,ph=B-T,bw=(R-L)/7;
+ let s=`<svg class="hist" viewBox="0 0 ${W} ${H}" role="img" aria-label="Histograma de alumnos registrados en cursos archivados y polígono de cursos archivados por periodo">`;
+ for(let t=0;t<=4;t++){const y=B-t*ph/4;s+=`<line class="gl" x1="${L}" x2="${R}" y1="${y}" y2="${y}"/><text x="${L-8}" y="${y+4}" text-anchor="end">${fmt(t*400)}</text><text x="${R+8}" y="${y+4}">${t*25}</text>`}
+ const pts=[[L,B]];
+ P.forEach((p,k)=>{const x=L+k*bw,h=arcM[k]/1600*ph,cx=x+bw/2,cy=B-newA[k]/100*ph;
+  s+=`<rect class="bar" x="${x+1.5}" y="${B-h}" width="${bw-3}" height="${h}"/><text class="bl" x="${cx}" y="${B-8}" text-anchor="middle">${fmt(arcM[k])}</text><text class="ax" x="${cx}" y="${B+22}" text-anchor="middle">${p}</text>`;
+  pts.push([cx,cy]);});
+ pts.push([R,B]);
+ s+=`<polyline class="pl" points="${pts.map(q=>q.join(',')).join(' ')}"/>`;
+ pts.slice(1,-1).forEach((q,k)=>{s+=`<circle class="pt" cx="${q[0]}" cy="${q[1]}" r="5.5"/><text class="dl" x="${q[0]}" y="${q[1]-12}" text-anchor="middle">${newA[k]}</text>`});
+ s+=`<text class="ax" x="${(L+R)/2}" y="${H-6}" text-anchor="middle">Periodos</text><text class="ax" transform="translate(14 ${(T+B)/2}) rotate(-90)" text-anchor="middle">Alumnos registrados (archivados)</text><text class="ax" transform="translate(${W-8} ${(T+B)/2}) rotate(90)" text-anchor="middle">Cursos archivados</text></svg>`;
+ document.getElementById('c3').innerHTML=s;
+})();
 const S=[...document.querySelectorAll('.slide')];let i=0;
 const dots=document.getElementById('dots');dots.innerHTML=S.map((_,k)=>`<i data-k="${k}"></i>`).join('');
 function go(n){i=Math.min(Math.max(n,0),S.length-1);S.forEach((s,k)=>s.classList.toggle('on',k===i));[...dots.children].forEach((d,k)=>d.classList.toggle('on',k===i));document.getElementById('ctr').textContent=(i+1)+' / '+S.length;}
