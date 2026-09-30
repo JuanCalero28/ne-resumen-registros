@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SEGUNDO AVANCE — Pedagógico Nueva Esperanza</title>
+<title>INFORME — Pedagógico Nueva Esperanza</title>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#F4F0E6;--card:#FFFDF8;--ink:#26221A;--soft:#5B564A;--line:#DBD3BE;--navy:#1F3350;--old:#A9B3C2;--gold:#B8933F;--green:#3F6B4F;--rust:#AD5A28;--hero:#1F3350;--hero-ink:#F2EEE2;
@@ -163,6 +163,54 @@ h2{font-size:clamp(22px,3.2vw,36px);max-width:920px}
     <div class="item"><h3>Prioridad: 2020-II</h3><p>129 cursos pendientes y solo 10.5% de matrículas cubiertas. Es el periodo más rezagado.</p></div>
     <div class="item"><h3>Siguiente: 2022-I y 2022-II</h3><p>113 cursos pendientes entre ambos, con avance de 51% y 59%.</p></div>
   </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Parte resolutiva · Incidencias Q10</div>
+  <h2>Detrás del archivo: 6 fallas de la plataforma, identificadas y resueltas</h2>
+  <p class="sub">El avance en cursos y matrículas no fue solo carga de datos: cada periodo tropezó con errores de parametrización heredados de la migración de malla curricular en los programas "Anterior" (Inicial y Primaria). Las siguientes diapositivas resumen qué se encontró y cómo se resolvió.</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">Metodología de regularización (1/2)</div>
+  <h2>Primero se limpiaron matrículas y capacidades, luego se reabrieron cursos</h2>
+  <div class="list">
+    <div class="item"><h3>1 · Alumnos matriculados de más</h3><p>Se retiraron con el botón "Retirar" del curso. Cuando el sistema bloqueaba el borrado por notas ya cargadas, se usó la ficha del alumno: desplegable → "Cancelar" → eliminar el registro en "Ver historial".</p></div>
+    <div class="item"><h3>2 · Capacidades que no suman 100%</h3><p>Bug de parametrización heredado de la migración. Se corrigió editando los indicadores en Unidades didácticas (plan antiguo) o Módulos (plan actual) hasta cuadrar exactamente el 100%.</p></div>
+    <div class="item"><h3>3 · Cursos cerrados con notas pendientes</h3><p>Q10 no tiene botón para reabrir un curso cerrado. Se estandarizó completar el 100% de notas en todas las subtablas de capacidad/indicador antes de cerrar, revisando cada capacidad del dropdown.</p></div>
+    <div class="item"><h3>4 · Matrícula de alumnas faltantes</h3><p>Se priorizó matricular a quienes faltaban en cursos ya cerca del 100% de notas, para poder cerrarlos cuanto antes.</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Metodología de regularización (2/2)</div>
+  <h2>Después se desegresó a quien lo necesitaba y se crearon los cursos faltantes</h2>
+  <div class="list">
+    <div class="item"><h3>5 · Alumnos egresados que bloqueaban notas</h3><p>El botón "Retirar como egresado" tiene nombre engañoso: no retira del programa, solo quita el estado de egresado y devuelve al alumno a "Activo" para seguir cargando notas.</p></div>
+    <div class="item"><h3>6 · Módulos y cursos inexistentes</h3><p>El caso más complejo, dejado para el final: cursos que debían crearse desde cero por fallas de asignación de módulos en los programas "Anterior". Ver caso destacado a continuación.</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Caso destacado · Resuelto en este avance</div>
+  <h2>Curso enlazado a la unidad didáctica equivocada</h2>
+  <p class="sub">El bug más profundo del proyecto: al crear o clonar cursos en los programas "Anterior", el sistema podía enlazarlos a la unidad didáctica de otro programa, sin ningún aviso visible.</p>
+  <div class="list" style="grid-template-columns:repeat(3,1fr)">
+    <div class="item"><h3>Síntoma</h3><p>El curso de Práctica e Investigación V tenía 5 alumnas con notas cargadas, pero su ficha académica marcaba la asignatura como "Pendiente" y la planilla de evaluaciones no reconocía estudiantes activos.</p></div>
+    <div class="item"><h3>Causa raíz</h3><p>El curso estaba enlazado a la unidad didáctica de Educación Inicial en vez de la unidad correcta de Educación Primaria Anterior — dos registros con nombre casi idéntico y el mismo ciclo.</p></div>
+    <div class="item"><h3>Solución aplicada</h3><p>Se creó un curso nuevo correctamente enlazado, se trasladaron las 5 alumnas y sus notas, y el curso original se neutralizó (sufijo "_NOUSAR") en vez de eliminarlo.</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Plan de cierre final</div>
+  <h2>Con las 6 fallas resueltas, el cierre de cada curso sigue tres pasos</h2>
+  <div class="list">
+    <div class="item"><h3>1 · Cerrar</h3><p>Con notas completas al 100% en todas las capacidades, se cierra el curso.</p></div>
+    <div class="item"><h3>2 · Archivar</h3><p>Solo aplica a cursos ya cerrados. En el modal de copia al siguiente periodo se elige "No copiar" para archivar sin generar una nueva oferta.</p></div>
+    <div class="item"><h3>3 · Matrícula extemporánea</h3><p>Para alumnos que aún falten, se usa la ruta individual por ficha de alumno, ya que no existe una función masiva para cursos históricos archivados.</p></div>
+  </div>
+  <p class="sub" style="margin-top:18px">Esta es la base con la que se seguirá cerrando el 45.4% de cursos y el 38.8% de matrículas que aún faltan.</p>
 </section>
 
 <div class="foot">
